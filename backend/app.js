@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var multer = require('multer');
+var bodyParser = require('body-parser');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -24,8 +25,12 @@ app.use((req, res, next) => {
 });
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// POSTサイズを10MBに変更
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ extended: true, limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

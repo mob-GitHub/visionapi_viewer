@@ -14,6 +14,7 @@
       ></v-file-input>
       <v-btn
         color="success"
+        @click="onAnalyzeClick"
       >
         解析する
       </v-btn>
@@ -23,11 +24,17 @@
       max-width="500"
       class="mt-5"
     ></v-img>
+    <v-textarea
+      class="mt-5"
+      :value="apiResult"
+      outlined
+    ></v-textarea>
   </v-app>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
 @Component
 export default class VisionOCR extends Vue {
@@ -35,6 +42,7 @@ export default class VisionOCR extends Vue {
   FILE_SIZE_LIMIT = 5000000;
 
   imageSource: string | ArrayBuffer = '';
+  apiResult = '';
 
   async fileUpload(file: File) {
     if (this.checkFile(file)) {
@@ -66,6 +74,19 @@ export default class VisionOCR extends Vue {
       reader.onload = () => resolve(reader.result != null ? reader.result : '');
       reader.onerror = error => reject(error);
     });
+  }
+
+  async onAnalyzeClick() {
+    const params = {
+      encodedImage: this.imageSource
+    };
+
+    try {
+      const apiResult = await axios.post('http://localhost:3000/visionapi', params);
+      this.apiResult = apiResult.data.responses[0].textAnnotations[0].description;
+    } catch (e) {
+      this.apiResult = 'API Failed.';
+    }
   }
 }
 </script>
