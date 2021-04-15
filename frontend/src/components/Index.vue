@@ -13,8 +13,8 @@
         active-class="text--accent-4"
       >
         <v-list-item
-          @click="onListClick(item.id, item.title)"
-          v-for="(item, id, index) in listItems"
+          @click="onListClick(item)"
+          v-for="(item, index) in listItems"
           :key="index"
         >
           <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -29,7 +29,7 @@
     </v-app-bar>
 
     <v-main>
-      <VisionOCR />
+      <component :is="currentComponent"></component>
     </v-main>
   </v-app>
 </template>
@@ -47,14 +47,16 @@ export default class Index extends Vue {
   drawer = true;
   group = null;
   listItems = [
-    { id: 'ocr', title: '光学式文字認識（OCR）' },
-    { id: 'crop', title: 'クロップヒント検出' },
-    { id: 'face', title: '顔検出' }
+    { component: 'VisionOCR', title: '光学式文字認識（OCR）' },
+    { component: '', title: 'クロップヒント検出' },
+    { component: '', title: '顔検出' }
   ];
   title = '';
+  currentComponent = '';
 
-  onListClick(id: string, title: string) {
-    this.title = title;
+  onListClick(item: any) {
+    this.title = item.title;
+    this.currentComponent = item.component;
   }
 }
 </script>
